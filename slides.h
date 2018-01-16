@@ -10,6 +10,7 @@ struct words
 	int x;
 	int y;
 	char just;
+	int is_large;
 	char *chars;
 	struct words *next;
 };

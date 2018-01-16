@@ -60,7 +60,8 @@ int read_file(char *fileName)
 	struct slide* aux;
 	struct words* aux_w;
 	char *buff;
-	int x,y;
+	char discard[5];
+	int x,y,lines,i;
 	char opt;
 	char just;
 
@@ -98,8 +99,29 @@ int read_file(char *fileName)
 			}
 			aux_w->x = x;
 			aux_w->y = y;
+			aux_w->is_large = 0;
 			aux_w->just = just;
 			aux_w->chars = buff;
+		} else if (opt == '&') {
+			fscanf(confFile, "%d:%d:%d", &x, &y, &lines);
+			fgets(discard,5,confFile); // To read the rest of the line
+			for(i=0;i<lines;i++) {
+				buff = (char *) malloc(sizeof(char)*MAX_BUFF);
+				fgets(buff,MAX_BUFF,confFile);
+				if (current->words == NULL) {
+					current->words = (struct words*) malloc(sizeof(struct words));
+					aux_w = current->words;
+				} else {
+					#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+					aux_w->next = (struct words*) malloc(sizeof(struct words));
+					aux_w = aux_w->next;
+				}
+				aux_w->x = x;
+				aux_w->y = y;
+				aux_w->is_large = 1;
+				aux_w->just = 'C';
+				aux_w->chars = buff;
+			}
 		}
 	}
 
@@ -110,7 +132,7 @@ int read_file(char *fileName)
 
 int draw()
 {
-	int x,y,pos_y,pos_x,len;
+	int x,y,pos_y,pos_x,len,i;
 	struct words* aux_w;
 
 	erase(); //Clean up window
@@ -130,8 +152,17 @@ int draw()
 		} else if (aux_w->just == 'R') {
 			pos_x = pos_x - len;
 		}
-		mvwprintw(mainwin, pos_y, pos_x, "%s", aux_w->chars);
-		aux_w = aux_w->next;
+		if (!aux_w->is_large) {
+			mvwprintw(mainwin, pos_y, pos_x, "%s", aux_w->chars);
+			aux_w = aux_w->next;
+		} else {
+			i = 0;
+			while(aux_w != NULL && aux_w->is_large) {
+				mvwprintw(mainwin, pos_y+i, pos_x, "%s", aux_w->chars);
+				i++;
+				aux_w = aux_w->next;
+			}
+		}
 	}
 
 	mvwprintw(mainwin, y-1, x-1, "%d", current->number);
