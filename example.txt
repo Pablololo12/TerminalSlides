@@ -1,0 +1,7 @@
+#
+% 50:25:Welcome to Slides on terminal
+% 50:50:Created by Pablololo12
+#
+%50:50:Hi this is the second slide
+#
+%50:50:THE END
