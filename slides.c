@@ -167,6 +167,6 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-
+	destroy();
 	return 0;
 }
