@@ -99,7 +99,7 @@ int read_file(char *fileName)
 			}
 			aux_w->x = x;
 			aux_w->y = y;
-			aux_w->is_large = 0;
+			aux_w->lines = 0;
 			aux_w->just = just;
 			aux_w->chars = buff;
 		} else if (opt == '&') {
@@ -118,7 +118,7 @@ int read_file(char *fileName)
 				}
 				aux_w->x = x;
 				aux_w->y = y;
-				aux_w->is_large = 1;
+				aux_w->lines = lines;
 				aux_w->just = 'C';
 				aux_w->chars = buff;
 			}
@@ -152,12 +152,13 @@ int draw()
 		} else if (aux_w->just == 'R') {
 			pos_x = pos_x - len;
 		}
-		if (!aux_w->is_large) {
+		if (aux_w->lines==0) {
 			mvwprintw(mainwin, pos_y, pos_x, "%s", aux_w->chars);
 			aux_w = aux_w->next;
 		} else {
 			i = 0;
-			while(aux_w != NULL && aux_w->is_large) {
+			len = aux_w->lines;
+			while(aux_w != NULL && i<len) {
 				mvwprintw(mainwin, pos_y+i, pos_x, "%s", aux_w->chars);
 				i++;
 				aux_w = aux_w->next;
