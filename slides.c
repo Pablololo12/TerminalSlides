@@ -62,6 +62,7 @@ int read_file(char *fileName)
 	char *buff;
 	int x,y;
 	char opt;
+	char just;
 
 
 	confFile = fopen(fileName, "r");
@@ -86,16 +87,18 @@ int read_file(char *fileName)
 			}
 		} else if (opt == '%') {
 			buff = (char *) malloc(sizeof(char)*MAX_BUFF);
-			fscanf(confFile, "%d:%d:%[^\n]", &x, &y, buff);
+			fscanf(confFile, "%d:%d:%c:%[^\n]", &x, &y, &just, buff);
 			if (current->words == NULL) {
 				current->words = (struct words*) malloc(sizeof(struct words));
 				aux_w = current->words;
 			} else {
+				#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 				aux_w->next = (struct words*) malloc(sizeof(struct words));
 				aux_w = aux_w->next;
 			}
 			aux_w->x = x;
 			aux_w->y = y;
+			aux_w->just = just;
 			aux_w->chars = buff;
 		}
 	}
@@ -122,7 +125,11 @@ int draw()
 		pos_y = y*aux_w->y/100;
 		pos_x = x*aux_w->x/100;
 		len = strlen(aux_w->chars);
-		pos_x = pos_x - len/2;
+		if (aux_w->just == 'C') {
+			pos_x = pos_x - len/2;
+		} else if (aux_w->just == 'R') {
+			pos_x = pos_x - len;
+		}
 		mvwprintw(mainwin, pos_y, pos_x, "%s", aux_w->chars);
 		aux_w = aux_w->next;
 	}

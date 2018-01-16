@@ -9,6 +9,7 @@ struct words
 {
 	int x;
 	int y;
+	char just;
 	char *chars;
 	struct words *next;
 };
