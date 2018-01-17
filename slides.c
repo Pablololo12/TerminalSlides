@@ -103,7 +103,7 @@ int read_file(char *fileName)
 			aux_w->just = just;
 			aux_w->chars = buff;
 		} else if (opt == '&') {
-			fscanf(confFile, "%d:%d:%d", &x, &y, &lines);
+			fscanf(confFile, "%d:%d:%c:%d", &x, &y, &just, &lines);
 			fgets(discard,5,confFile); // To read the rest of the line
 			for(i=0;i<lines;i++) {
 				buff = (char *) malloc(sizeof(char)*MAX_BUFF);
@@ -119,7 +119,7 @@ int read_file(char *fileName)
 				aux_w->x = x;
 				aux_w->y = y;
 				aux_w->lines = lines;
-				aux_w->just = 'C';
+				aux_w->just = just;
 				aux_w->chars = buff;
 			}
 		}
