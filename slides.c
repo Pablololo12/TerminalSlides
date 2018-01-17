@@ -88,7 +88,8 @@ int read_file(char *fileName)
 			}
 		} else if (opt == '%') {
 			buff = (char *) malloc(sizeof(char)*MAX_BUFF);
-			fscanf(confFile, "%d:%d:%c:%[^\n]", &x, &y, &just, buff);
+			fscanf(confFile, "%d:%d:%c:", &x, &y, &just);
+			fgets(buff,MAX_BUFF,confFile);
 			if (current->words == NULL) {
 				current->words = (struct words*) malloc(sizeof(struct words));
 				aux_w = current->words;
