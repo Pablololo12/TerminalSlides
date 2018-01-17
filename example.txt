@@ -12,9 +12,11 @@ $$\   $$ |$$ |        $$ |  $$ |  $$ |$$ |      $$\   $$ |
 
 #
 % 50:10:C:Hi this is the second slide
-% 10:35:L:* Item 1
-% 10:40:L:* Item 2
-% 10:45:L:* Item 3
+& 10:35:L:3
+* Item 1
+* Item 2
+* Item 3
+
 % 0:90:L:LEFT Justified
 % 100:90:R:RIGHT Justified
 % 50:90:C:Centered
