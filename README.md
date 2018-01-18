@@ -25,4 +25,4 @@ This is the first version so the file is very simple:
 You need a compatible terminal emulator, like iTerm, in order to see colors.
 
 
-[![asciicast](https://asciinema.org/a/nbjNwyEtWhW6rz4oHpdvESOxd.png)](https://asciinema.org/a/nbjNwyEtWhW6rz4oHpdvESOxd)
+[![asciicast](https://asciinema.org/a/5iTTmyqjpH7A4FBLg66ZnvbkA.png)](https://asciinema.org/a/5iTTmyqjpH7A4FBLg66ZnvbkA)
