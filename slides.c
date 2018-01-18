@@ -29,10 +29,17 @@ int initialize_win()
 
 	start_color();
 
-	if ( has_colors() && COLOR_PAIRS >= 13 ) {
-
-		init_pair(1,  COLOR_RED,     COLOR_BLACK);
-		init_pair(2,  COLOR_WHITE,   COLOR_BLACK);
+	if ( has_colors() && can_change_color() && COLOR_PAIRS >= 13 ) {
+		init_pair(1, COLOR_RED, COLOR_BLACK);
+		init_pair(2, COLOR_GREEN, COLOR_BLACK);
+		init_pair(3, COLOR_BLUE, COLOR_BLACK);
+		init_pair(4, COLOR_WHITE, COLOR_BLACK);
+		init_pair(5, COLOR_RED, COLOR_WHITE);
+		init_pair(6, COLOR_GREEN, COLOR_WHITE);
+		init_pair(7, COLOR_BLUE, COLOR_WHITE);
+		init_pair(8, COLOR_BLACK, COLOR_WHITE);
+	} else {
+		printf("Pantalla no soportada\n");
 	}
 
 	refresh();
@@ -58,10 +65,10 @@ int read_file(char *fileName)
 	FILE *confFile;
 	int num = 0;
 	struct slide* aux;
-	struct words* aux_w;
+	struct words* aux_w = NULL;
 	char *buff;
 	char discard[5];
-	int x,y,lines,i;
+	int x,y,lines,i,color;
 	char opt;
 	char just;
 
@@ -74,21 +81,26 @@ int read_file(char *fileName)
 	while(!feof(confFile)) {
 		opt = fgetc(confFile);
 		if (opt == '#') {
+			color = fgetc(confFile);
 			if (start == NULL) {
 				start = (struct slide*) malloc(sizeof(struct slide));
 				start->number = ++num;
+				start->color = color == 'W' ? 1 : 0;
 				current = start;
+				current->words = NULL;
+				current->prev = NULL;
 			} else {
 				current->next = (struct slide*) malloc(sizeof(struct slide));
 				aux = current;
 				current = current->next;
 				current->prev = aux;
 				current->number = ++num;
-				aux_w = NULL;
+				current->color = color == 'W' ? 1 : 0;
+				current->words = NULL;
 			}
 		} else if (opt == '%') {
 			buff = (char *) malloc(sizeof(char)*MAX_BUFF);
-			fscanf(confFile, "%d:%d:%c:", &x, &y, &just);
+			fscanf(confFile, "%d:%d:%c:%d:", &x, &y, &just, &color);
 			fgets(buff,MAX_BUFF,confFile);
 			if (current->words == NULL) {
 				current->words = (struct words*) malloc(sizeof(struct words));
@@ -103,8 +115,9 @@ int read_file(char *fileName)
 			aux_w->lines = 0;
 			aux_w->just = just;
 			aux_w->chars = buff;
+			aux_w->color = color;
 		} else if (opt == '&') {
-			fscanf(confFile, "%d:%d:%c:%d", &x, &y, &just, &lines);
+			fscanf(confFile, "%d:%d:%c:%d:%d", &x, &y, &just,&color, &lines);
 			fgets(discard,5,confFile); // To read the rest of the line
 			for(i=0;i<lines;i++) {
 				buff = (char *) malloc(sizeof(char)*MAX_BUFF);
@@ -122,6 +135,7 @@ int read_file(char *fileName)
 				aux_w->lines = lines;
 				aux_w->just = just;
 				aux_w->chars = buff;
+				aux_w->color = color;
 			}
 		}
 	}
@@ -133,7 +147,7 @@ int read_file(char *fileName)
 
 int draw()
 {
-	int x,y,pos_y,pos_x,len,i;
+	int x,y,pos_y,pos_x,len,i,bg;
 	struct words* aux_w;
 
 	erase(); //Clean up window
@@ -141,10 +155,16 @@ int draw()
 	// get size of windows
 	getmaxyx(mainwin, y, x);
 
-	color_set(2, NULL);
+	bg = current->color;
+	if (bg == 1) { //white
+		wbkgd(mainwin, COLOR_PAIR(8));
+	} else {
+		wbkgd(mainwin, COLOR_PAIR(4));
+	}
 
 	aux_w = current->words;
 	while (aux_w != NULL) {
+		color_set(aux_w->color+4*bg, NULL);
 		pos_y = y*aux_w->y/100;
 		pos_x = x*aux_w->x/100;
 		len = strlen(aux_w->chars);
@@ -166,7 +186,6 @@ int draw()
 			}
 		}
 	}
-
 	mvwprintw(mainwin, y-1, x-1, "%d", current->number);
 
 	refresh();
@@ -184,11 +203,12 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	initialize_win();
 	if (read_file(argv[1]) != 1) {
 		printf("Error reading file\n");
 		return 1;
 	}
+
+	initialize_win();
 
 	draw();
 	while (1) {
