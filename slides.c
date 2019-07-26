@@ -1,6 +1,7 @@
 /*
  * Pablololo12
  * pabloheralm@gmail.com
+ * Copyright (C) 2019 Pablo Hernández
  */
 
 #include <stdio.h>
